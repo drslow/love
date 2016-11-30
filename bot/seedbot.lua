@@ -45,6 +45,15 @@ function on_binlog_replay_end()
 end
 
 function msg_valid(msg)
+	
+	  -- Don't reply to normal users if cmd is locked
+  local hash = 'mutetmcmd:'..msg.to.id
+  if msg.text:match("[/!#]") and redis:get(hash) and not is_momod(msg) then
+	print('\27[36mNot valid: cmd is lock\27[39m')
+	--return false -- Cause bug
+	msg.text = ""	
+  end	
+	
   -- Don't process outgoing messages
   if msg.out then
     print('\27[36mNot valid: msg from us\27[39m')
